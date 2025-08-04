@@ -5,11 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>xyz.firestige.qcare</groupId>
-        <artifactId>qcare-agent</artifactId>
+        <artifactId>proxy-service-plugins</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>qcare-java-agent</artifactId>
-    <packaging>pom</packaging>
+
+    <groupId>xyz.firestige.qcare.service</groupId>
+    <artifactId>arthas-service-plugin</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
