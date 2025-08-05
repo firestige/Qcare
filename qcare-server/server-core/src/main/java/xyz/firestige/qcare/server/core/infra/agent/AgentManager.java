@@ -3,61 +3,57 @@ package xyz.firestige.qcare.server.core.infra.agent;
 import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Mono;
+import xyz.firestige.qcare.server.core.infra.agent.model.AgentInfo;
+import xyz.firestige.qcare.server.core.infra.agent.model.AgentState;
+import xyz.firestige.qcare.server.core.infra.agent.model.ConnectInfo;
+
+import java.util.List;
 
 @Service
-public class AgentManager implements AgentManagementService {
+public class AgentManager implements AgentManagementService, AgentRegistrationService {
 
     @Override
     public Mono<Boolean> isAgentOnline(String agentId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isAgentOnline'");
-    }
-
-    @Override
-    public Mono<Boolean> hasAgent(String agentId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'hasAgent'");
+        return null;
     }
 
     @Override
     public Mono<Boolean> handleKeepAlive(String agentId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleKeepAlive'");
+        return null;
     }
 
     @Override
     public Mono<Boolean> sendMessageToAgent(String agentId, String message) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'sendMessageToAgent'");
+        return null;
     }
 
     @Override
     public Mono<Boolean> sendEventToAgent(String agentId, String eventType, Object eventData) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'sendEventToAgent'");
+        return null;
     }
 
     @Override
-    public Mono<Void> registerAgent(String agentId, String agentName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'registerAgent'");
+    public Mono<Void> updateAgentStatus(String agentId, AgentState status) {
+        return null;
     }
 
     @Override
-    public Mono<Void> unregisterAgent(String agentId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'unregisterAgent'");
+    public Mono<ConnectInfo> registerAgent(AgentInfo agentInfo) {
+        return null;
     }
 
     @Override
-    public Mono<Void> updateAgentStatus(String agentId, String status) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateAgentStatus'");
+    public Mono<AgentInfo> unregisterAgent(String agentId) {
+        return null;
     }
 
     @Override
-    public Mono<Boolean> validateConnectionToken(String token, String agentId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'validateConnectionToken'");
+    public List<AgentInfo> getRegisteredAgents() {
+        return List.of();
+    }
+
+    @Override
+    public Mono<Boolean> hasAgent(String agentId) {
+        return null;
     }
 }

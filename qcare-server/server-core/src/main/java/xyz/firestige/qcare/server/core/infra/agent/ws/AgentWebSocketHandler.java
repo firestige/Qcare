@@ -15,17 +15,14 @@ public class AgentWebSocketHandler implements WebSocketHandler {
     private static final Logger log = LoggerFactory.getLogger(AgentWebSocketHandler.class);
     private final AgentWebSocketManager webSocketManager;
     private final ObjectMapper objectMapper;
-    private final AgentManagementService agentManagementService;
     private final DispatchHandler dispatcher;
 
     public AgentWebSocketHandler(AgentWebSocketManager webSocketManager,
                                  ObjectMapper objectMapper,
-                                 AgentManagementService agentManagementService,
-                                 DispatchHandler dipatcher) {
+                                 DispatchHandler dispatcher) {
         this.webSocketManager = webSocketManager;
         this.objectMapper = objectMapper;
-        this.agentManagementService = agentManagementService;
-        this.dispatcher = dipatcher;
+        this.dispatcher = dispatcher;
     }
 
     @Override
@@ -38,7 +35,7 @@ public class AgentWebSocketHandler implements WebSocketHandler {
         }
 
 
-        return agentManagementService.validateConnectionToken(token, agentId)
+        return webSocketManager.validateConnectionToken(token, agentId)
             .flatMap(valid -> {
                 if (!valid) {
                     return session.close();
@@ -76,23 +73,13 @@ public class AgentWebSocketHandler implements WebSocketHandler {
             try {
                 String payload = msg.getPayloadAsText();
                 GenericMessage genericMessage = objectMapper.readValue(payload, GenericMessage.class);
-                if (genericMessage.isHeartbeat()) {
-                    handleHeartbeat(agentId);
-                } else {
-                    dispatcher.dispatch(genericMessage, agentId)
-                        .doOnError(e -> log.error("处理消息失败: {}", e.getMessage()))
-                        .doFinally(unused -> log.trace("finished dispatching message: {}", genericMessage))
-                        .subscribe();
-                }
+                dispatcher.dispatch(genericMessage, agentId)
+                    .doOnError(e -> log.error("处理消息失败: {}", e.getMessage()))
+                    .doFinally(unused -> log.trace("finished dispatching message: {}", genericMessage))
+                    .subscribe();
             } catch (Exception e) {
                 // 处理消息解析错误
             }
         }).then();
-    }
-
-    private void handleHeartbeat(String agentId) {
-        agentManagementService.handleKeepAlive(agentId).subscribe(isSuccess -> {
-            log.debug("keepAlive: {} - {}", agentId, isSuccess);
-        });
     }
 }
