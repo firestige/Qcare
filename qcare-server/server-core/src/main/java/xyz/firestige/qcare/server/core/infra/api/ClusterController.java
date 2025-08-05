@@ -1,4 +1,4 @@
-package xyz.firestige.qcare.server.core.infra.cluster;
+package xyz.firestige.qcare.server.core.infra.api;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -8,6 +8,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import xyz.firestige.qcare.server.core.infra.agent.AgentRegistrationService;
+import xyz.firestige.qcare.server.core.infra.cluster.ClusterManagementService;
 
 @RestController
 @RequestMapping("/api/cluster")
