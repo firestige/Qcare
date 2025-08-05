@@ -1,25 +1,28 @@
 package xyz.firestige.qcare.server.core.infra.api;
 
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.server.ServerResponse;
-import reactor.core.publisher.Mono;
-import xyz.firestige.qcare.server.core.infra.agent.AgentManagementService;
-import xyz.firestige.qcare.server.core.infra.agent.AgentRegistrationService;
-import xyz.firestige.qcare.server.core.infra.agent.model.vo.AgentRegisterRequest;
-import xyz.firestige.qcare.server.core.infra.cluster.ClusterManagementService;
-
 import java.net.URI;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.server.ServerResponse;
+
+import reactor.core.publisher.Mono;
+import xyz.firestige.qcare.server.core.infra.agent.AgentRegistrationService;
+import xyz.firestige.qcare.server.core.infra.api.vo.AgentRegisterRequest;
+import xyz.firestige.qcare.server.core.infra.cluster.ClusterManagementService;
 
 @RestController
 @RequestMapping("/api/agent")
 public class AgentController {
     private final AgentRegistrationService agentRegistrationService;
-    private final AgentManagementService agentManagementService;
     private final ClusterManagementService clusterManagementService;
 
-    public AgentController(AgentRegistrationService agentRegistrationService, AgentManagementService agentManagementService, ClusterManagementService clusterManagementService) {
+    public AgentController(AgentRegistrationService agentRegistrationService, ClusterManagementService clusterManagementService) {
         this.agentRegistrationService = agentRegistrationService;
-        this.agentManagementService = agentManagementService;
         this.clusterManagementService = clusterManagementService;
     }
 
@@ -30,7 +33,8 @@ public class AgentController {
                     .flatMap(response -> ServerResponse.ok().bodyValue(response))
                     .onErrorResume(e -> ServerResponse.status(500).bodyValue("Registration failed: " + e.getMessage()));
         } else {
-            URI uri = clusterManagementService.getLeaderUri();
+            String leaderHost = clusterManagementService.getLeaderHost();
+            URI uri = URI.create("http://" + leaderHost + "/api/agent/");
             return ServerResponse.permanentRedirect(uri).build();
         }
     }
@@ -43,7 +47,8 @@ public class AgentController {
                     .switchIfEmpty(Mono.defer(() -> ServerResponse.notFound().build()))
                     .onErrorResume(e -> ServerResponse.status(500).bodyValue("Registration failed: " + e.getMessage()));
         } else {
-            URI uri = clusterManagementService.getLeaderUri();
+            String host = clusterManagementService.getLeaderHost();
+            URI uri = URI.create("http://" + host + "/api/agent/" + id);
             return ServerResponse.permanentRedirect(uri).build();
         }
     }
