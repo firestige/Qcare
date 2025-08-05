@@ -1,4 +1,4 @@
-package xyz.firestige.qcare.server.service.plugin.arthas;
+package xyz.firestige.qcare.server.service.arthas;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

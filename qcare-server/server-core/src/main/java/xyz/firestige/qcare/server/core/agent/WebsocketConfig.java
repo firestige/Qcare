@@ -16,7 +16,7 @@ public class WebsocketConfig {
     public HandlerMapping webSocketHandlerMapping(ApplicationContext ctx) {
         Map<String, WebSocketHandler> beans = ctx.getBeansOfType(WebSocketHandler.class, false, true);
         Map<String, WebSocketHandler> urlMap = new HashMap<>();
-        urlMap.put("/ws/agent/{agentId}", beans.get("agentWebSocketHandler"));
+        urlMap.put("/ws/agent", beans.get("agentWebSocketHandler"));
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
         mapping.setUrlMap(urlMap);
         mapping.setOrder(1);

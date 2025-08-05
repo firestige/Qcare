@@ -1,4 +1,4 @@
-package xyz.firestige.qcare.server.core.api;
+package xyz.firestige.qcare.server.api;
 
 import java.net.URI;
 
@@ -12,7 +12,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 
 import reactor.core.publisher.Mono;
 import xyz.firestige.qcare.server.core.agent.AgentRegistrationService;
-import xyz.firestige.qcare.server.core.api.vo.AgentRegisterRequest;
+import xyz.firestige.qcare.server.api.vo.AgentRegisterRequest;
 import xyz.firestige.qcare.server.core.cluster.ClusterManagementService;
 
 @RestController

@@ -1,4 +1,4 @@
-package xyz.firestige.qcare.server.service.plugin.arthas;
+package xyz.firestige.qcare.server.service.arthas;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -9,10 +9,10 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 
 @Service
-public class ArthasService {
+public class ArthasClientService {
     private final WebClient webClient;
 
-    public ArthasService(@Value("${arthas.api.url:http://localhost:8563/api}") String arthasApiUrl) {
+    public ArthasClientService(@Value("${arthas.api.url:http://localhost:8563/api}") String arthasApiUrl) {
         this.webClient = WebClient.builder()
                 .baseUrl(arthasApiUrl)
                 .build();
