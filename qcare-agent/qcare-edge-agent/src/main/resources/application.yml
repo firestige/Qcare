@@ -1,0 +1,46 @@
+qcare:
+  server:
+    url: ${QCARE_SERVER_URL:http://localhost:8080}
+    websocket:
+      url: ${QCARE_WEBSOCKET_URL:ws://localhost:8080/ws/agent}
+  agent:
+    id: ${AGENT_ID:edge-agent-${random.value}}
+    name: ${AGENT_NAME:QCare Edge Agent}
+    version: ${AGENT_VERSION:1.0.0}
+    heartbeat:
+      interval: ${HEARTBEAT_INTERVAL:60}
+    monitoring:
+      interval: ${MONITORING_INTERVAL:30}
+    health:
+      check:
+        interval: ${HEALTH_CHECK_INTERVAL:10}
+    reconnect:
+      delay: ${RECONNECT_DELAY:5}
+    max:
+      reconnect:
+        attempts: ${MAX_RECONNECT_ATTEMPTS:10}
+
+micronaut:
+  application:
+    name: qcare-edge-agent
+  http:
+    client:
+      read-timeout: 30s
+      connect-timeout: 10s
+      pool:
+        enabled: true
+        max-connections: 10
+  websocket:
+    client:
+      auto-ping: true
+      ping-period: 30s
+      read-timeout: 60s
+
+logging:
+  level:
+    xyz.firestige.qcare: DEBUG
+    io.micronaut: INFO
+    root: INFO
+  loggers:
+    xyz.firestige.qcare.agent.service.SystemMonitorService: DEBUG
+    xyz.firestige.qcare.agent.client: DEBUG
