@@ -1,4 +1,4 @@
-package xyz.firestige.qcare.server.config;
+package xyz.firestige.qcare.server.core.agent;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;

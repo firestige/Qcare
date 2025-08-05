@@ -1,8 +1,8 @@
-package xyz.firestige.qcare.server.core.infra.agent.ws;
+package xyz.firestige.qcare.server.core.agent.ws;
 
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
-import xyz.firestige.qcare.server.core.infra.agent.model.AgentInfo;
+import xyz.firestige.qcare.server.core.agent.model.AgentInfo;
 
 public interface AgentWebSocketManager {
     /**

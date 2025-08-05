@@ -1,4 +1,4 @@
-package xyz.firestige.qcare.server.core.infra.agent.model;
+package xyz.firestige.qcare.server.core.agent.model;
 
 public record AgentInfo(
         String agentId,

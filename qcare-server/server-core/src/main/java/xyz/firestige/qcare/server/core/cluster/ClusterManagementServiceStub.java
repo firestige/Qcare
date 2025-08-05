@@ -1,4 +1,4 @@
-package xyz.firestige.qcare.server.core.infra.cluster;
+package xyz.firestige.qcare.server.core.cluster;
 
 import org.springframework.stereotype.Service;
 

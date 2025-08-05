@@ -1,11 +1,11 @@
-package xyz.firestige.qcare.server.core.infra.agent;
+package xyz.firestige.qcare.server.core.agent;
 
 import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Mono;
-import xyz.firestige.qcare.server.core.infra.agent.model.AgentInfo;
-import xyz.firestige.qcare.server.core.infra.agent.model.AgentState;
-import xyz.firestige.qcare.server.core.infra.agent.model.ConnectInfo;
+import xyz.firestige.qcare.server.core.agent.model.AgentInfo;
+import xyz.firestige.qcare.server.core.agent.model.AgentState;
+import xyz.firestige.qcare.server.core.agent.model.ConnectInfo;
 
 import java.util.List;
 

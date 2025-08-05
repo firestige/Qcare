@@ -1,7 +1,7 @@
-package xyz.firestige.qcare.server.core.infra.agent;
+package xyz.firestige.qcare.server.core.agent;
 
 import reactor.core.publisher.Mono;
-import xyz.firestige.qcare.server.core.infra.agent.model.AgentState;
+import xyz.firestige.qcare.server.core.agent.model.AgentState;
 
 public interface AgentManagementService {
     /**

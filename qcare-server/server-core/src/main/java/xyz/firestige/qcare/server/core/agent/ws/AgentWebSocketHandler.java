@@ -1,4 +1,4 @@
-package xyz.firestige.qcare.server.core.infra.agent.ws;
+package xyz.firestige.qcare.server.core.agent.ws;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
-import xyz.firestige.qcare.server.core.infra.agent.AgentManagementService;
 
 @Component
 public class AgentWebSocketHandler implements WebSocketHandler {

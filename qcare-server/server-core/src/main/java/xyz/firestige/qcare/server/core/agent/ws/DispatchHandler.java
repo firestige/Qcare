@@ -1,4 +1,4 @@
-package xyz.firestige.qcare.server.core.infra.agent.ws;
+package xyz.firestige.qcare.server.core.agent.ws;
 
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
