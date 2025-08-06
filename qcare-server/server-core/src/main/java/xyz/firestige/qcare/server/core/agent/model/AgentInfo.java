@@ -1,12 +1,12 @@
 package xyz.firestige.qcare.server.core.agent.model;
 
+import java.util.Map;
+
 public record AgentInfo(
         String agentId,
         String agentName,
-        String agentVersion,
-        String agentType,
-        String agentDescription,
         AgentState agentState,
-        String agentIpAddress
+        String agentIpAddress,
+        Map<String, String> agentMetadata
 ) {
 }

@@ -1,7 +1,10 @@
 package xyz.firestige.qcare.server.core.ws.server.support;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
@@ -22,6 +25,7 @@ import xyz.firestige.qcare.server.core.ws.method.InvocableHandlerMethod;
 import xyz.firestige.qcare.server.core.ws.server.HandlerAdapter;
 
 public class MessageMappingHandlerAdapter implements HandlerAdapter, DispatchExceptionHandler, ApplicationContextAware, InitializingBean {
+    private static final Logger log = LoggerFactory.getLogger(MessageMappingHandlerAdapter.class);
     private ArgumentResolverConfigurer argumentResolverConfigurer;
     private Scheduler scheduler;
     private ReactiveAdapterRegistry reactiveAdapterRegistry;
@@ -48,8 +52,8 @@ public class MessageMappingHandlerAdapter implements HandlerAdapter, DispatchExc
 
     @Override
     public Mono<HandlerResult> handleException(WebSocketSession session, Throwable exception) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'handleException'");
+        // TODO: Implement exception handling logic
+        return Mono.empty();
     }
 
     @Override
@@ -71,7 +75,7 @@ public class MessageMappingHandlerAdapter implements HandlerAdapter, DispatchExc
     }
 
     private Mono<HandlerResult> handleException(WebSocketSession session, Throwable exception, HandlerMethod method) {
-        // 处理异常逻辑
-        return Mono.error(exception);
+        // TODO: Implement exception handling logic
+        return Mono.empty();
     }
 }

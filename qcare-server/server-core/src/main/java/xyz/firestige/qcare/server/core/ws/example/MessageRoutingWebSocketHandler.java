@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import reactor.core.publisher.Mono;
 import xyz.firestige.qcare.server.core.ws.Message;
-import xyz.firestige.qcare.server.core.ws.MessageDispatcher;
+import xyz.firestige.qcare.server.core.ws.Dispatcher;
 import xyz.firestige.qcare.server.core.ws.annotation.OnClose;
 import xyz.firestige.qcare.server.core.ws.annotation.OnError;
 import xyz.firestige.qcare.server.core.ws.annotation.OnMessage;
@@ -22,7 +22,7 @@ import xyz.firestige.qcare.server.core.ws.annotation.Websocket;
 public class MessageRoutingWebSocketHandler {
 
     @Autowired
-    private MessageDispatcher messageDispatcher;
+    private Dispatcher dispatcher;
     
     @Autowired
     private ObjectMapper objectMapper;
@@ -39,7 +39,7 @@ public class MessageRoutingWebSocketHandler {
             System.out.println("收到消息: " + messageText);
             
             // 使用消息分发器处理消息
-            Message<?> response = messageDispatcher.handleMessage(messageText, session);
+            Message<?> response = dispatcher.handleMessage(messageText, session);
             
             if (response != null) {
                 // 发送响应

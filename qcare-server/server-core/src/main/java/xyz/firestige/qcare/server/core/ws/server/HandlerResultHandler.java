@@ -7,5 +7,5 @@ import xyz.firestige.qcare.server.core.ws.HandlerResult;
 
 public interface HandlerResultHandler {
     boolean supports(HandlerResult result);
-    Mono<Void> handleResult(WebSocketSession session, Mono<HandlerResult> result);
+    Mono<Void> handleResult(WebSocketSession session, HandlerResult result);
 }

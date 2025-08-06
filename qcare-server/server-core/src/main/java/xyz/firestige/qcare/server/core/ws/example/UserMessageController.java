@@ -3,7 +3,7 @@ package xyz.firestige.qcare.server.core.ws.example;
 import org.springframework.web.reactive.socket.WebSocketSession;
 
 import xyz.firestige.qcare.server.core.ws.Message;
-import xyz.firestige.qcare.server.core.ws.annotation.MsgMapping;
+import xyz.firestige.qcare.server.core.ws.annotation.RouteMapping;
 import xyz.firestige.qcare.server.core.ws.annotation.WsMsgController;
 
 /**
@@ -12,7 +12,7 @@ import xyz.firestige.qcare.server.core.ws.annotation.WsMsgController;
 @WsMsgController
 public class UserMessageController {
 
-    @MsgMapping(route = "user.login", type = "request")
+    @RouteMapping(route = "user.login", type = "request")
     public Message<LoginResponse> handleLogin(Message<LoginRequest> message, WebSocketSession session) {
         LoginRequest request = message.getPayload();
         
@@ -30,7 +30,7 @@ public class UserMessageController {
         return new Message<>(message.getId(), "response", message.getRoute(), response);
     }
 
-    @MsgMapping(route = "user.info", type = "request")
+    @RouteMapping(route = "user.info", type = "request")
     public Message<UserInfo> getUserInfo(Message<GetUserInfoRequest> message) {
         GetUserInfoRequest request = message.getPayload();
         

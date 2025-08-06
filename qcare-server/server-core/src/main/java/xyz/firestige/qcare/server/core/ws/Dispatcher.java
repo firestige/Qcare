@@ -14,7 +14,6 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import xyz.firestige.qcare.server.core.ws.mapping.HandlerMapping;
 import xyz.firestige.qcare.server.core.ws.server.HandlerAdapter;
 import xyz.firestige.qcare.server.core.ws.server.HandlerResultHandler;
 import xyz.firestige.qcare.server.core.ws.server.MessageHandler;
@@ -22,13 +21,13 @@ import xyz.firestige.qcare.server.core.ws.server.MessageHandler;
 /**
  * 消息分发器，类似于DispatcherHandler
  */
-public class MessageDispatcher implements MessageHandler, ApplicationContextAware {
+public class Dispatcher implements MessageHandler, ApplicationContextAware {
 
     private List<HandlerMapping> handlerMappings;
     private List<HandlerAdapter> handlerAdapters;
     private List<HandlerResultHandler> resultHandlers;
 
-    public MessageDispatcher(ApplicationContext ctx) {
+    public Dispatcher(ApplicationContext ctx) {
         init(ctx);
     }
 
@@ -55,7 +54,7 @@ public class MessageDispatcher implements MessageHandler, ApplicationContextAwar
     @Override
     public Mono<Void> handle(WebSocketSession session, Message<?> message) {
         return Flux.fromIterable(this.handlerMappings)
-                .concatMap(mapping -> mapping.getHandler(session))
+                .concatMap(mapping -> mapping.getHandler(message))
                 .next()
                 .switchIfEmpty(createNotFoundError())
                 .onErrorResume(e -> handleResultMono(session, Mono.error(e)))

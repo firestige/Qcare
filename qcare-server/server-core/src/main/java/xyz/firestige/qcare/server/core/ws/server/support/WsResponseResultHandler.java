@@ -40,8 +40,8 @@ public class WsResponseResultHandler implements HandlerResultHandler, Initializi
     }
 
     @Override
-    public Mono<Void> handleResult(WebSocketSession session, Mono<HandlerResult> resultMono) {
-        Mono<WebSocketMessage> messageMono = resultMono
+    public Mono<Void> handleResult(WebSocketSession session, HandlerResult result) {
+        Mono<WebSocketMessage> messageMono = Mono.just(result)
                 .map(HandlerResult::getReturnValue)
                 .cast(WsResponse.class)
                 .flatMap(resp -> {

@@ -18,8 +18,8 @@ import org.springframework.web.reactive.socket.WebSocketHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import xyz.firestige.qcare.server.core.ws.MessageDispatcher;
-import xyz.firestige.qcare.server.core.ws.annotation.MsgMapping;
+import xyz.firestige.qcare.server.core.ws.Dispatcher;
+import xyz.firestige.qcare.server.core.ws.annotation.RouteMapping;
 import xyz.firestige.qcare.server.core.ws.annotation.OnClose;
 import xyz.firestige.qcare.server.core.ws.annotation.OnError;
 import xyz.firestige.qcare.server.core.ws.annotation.OnMessage;
@@ -75,7 +75,7 @@ public class WebSocketAutoConfiguration {
     }
 
     @Bean
-    public MessageDispatcher messageDispatcher() {
+    public Dispatcher messageDispatcher(ApplicationContext ctx) {
         List<xyz.firestige.qcare.server.core.ws.mapping.HandlerMapping> handlerMappings = new ArrayList<>();
         
         // 扫描所有被@WsMsgController注解的类
@@ -83,21 +83,21 @@ public class WebSocketAutoConfiguration {
         
         for (Object bean : controllerBeans.values()) {
             Class<?> clazz = bean.getClass();
-            MsgMapping classMapping = clazz.getAnnotation(MsgMapping.class);
+            RouteMapping classMapping = clazz.getAnnotation(RouteMapping.class);
             
             // 扫描方法
             Method[] methods = clazz.getDeclaredMethods();
             for (Method method : methods) {
-                MsgMapping methodMapping = method.getAnnotation(MsgMapping.class);
+                RouteMapping methodMapping = method.getAnnotation(RouteMapping.class);
                 if (methodMapping != null) {
                     // 合并类级别和方法级别的映射
-                    MsgMapping combinedMapping = combineMapping(classMapping, methodMapping);
+                    RouteMapping combinedMapping = combineMapping(classMapping, methodMapping);
                     handlerMappings.add(new xyz.firestige.qcare.server.core.ws.mapping.HandlerMapping(bean, method, combinedMapping));
                 }
             }
         }
         
-        return new MessageDispatcher(handlerMappings, objectMapper);
+        return new Dispatcher(ctx);
     }
 
     private String[] getPaths(Websocket annotation) {
@@ -132,7 +132,7 @@ public class WebSocketAutoConfiguration {
         return null;
     }
 
-    private MsgMapping combineMapping(MsgMapping classMapping, MsgMapping methodMapping) {
+    private RouteMapping combineMapping(RouteMapping classMapping, RouteMapping methodMapping) {
         // 这里简化处理，实际应该创建一个代理对象
         return methodMapping != null ? methodMapping : classMapping;
     }
