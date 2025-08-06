@@ -17,13 +17,20 @@ public class DefaultArthasTunnelService implements ArthasRemoteService {
 
     @EventListener(classes = AgentRegisteredEvent.class)
     public void onAgentRegistered(AgentRegisteredEvent event) {
-
-        addAgentConnectionInfo()
+        // 监听 AgentRegisteredEvent 事件，当有新的Agent注册时，对这个实例执行初始化处理
     }
 
+    @EventListener(classes = AgentUnRegisteredEvent.class)
+    public void onAgentRegistered(AgentUnRegisteredEvent event) {
+        // 监听 AgentUnRegisteredEvent 事件，当有Agent离线时，清理相关的连接数据
+    }
 
-    @Override
-    public Mono<Void> initArthasInstances() {
+    public void initArthasInstances() {
+        // 1. 查询Agent注册表，获取所有已注册的Agent实例
+        // 2. 把支持arthas部署的实例加入管理清单，下发最新的arthas.properties配置
+        // 3. 对每个Agent实例，请求ps -ef | grep java列表
+        // 4. 对每个Java进程，获取Arthas实例的连接信息
+        // 5. 初始化Arthas实例，存储在管理器中
         return null;
     }
 
