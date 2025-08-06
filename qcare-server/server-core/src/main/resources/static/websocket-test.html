@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket 测试页面</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .connection-status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .connected { background-color: #d4edda; color: #155724; }
+        .disconnected { background-color: #f8d7da; color: #721c24; }
+        .message-box { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; margin: 10px 0; }
+        .input-group { margin: 10px 0; }
+        .input-group label { display: inline-block; width: 100px; }
+        .input-group input, .input-group textarea { width: 300px; padding: 5px; }
+        button { padding: 8px 16px; margin: 5px; cursor: pointer; }
+        .echo-section, .message-section { border: 1px solid #ddd; padding: 15px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WebSocket 测试页面</h1>
+        
+        <!-- Echo WebSocket 测试 -->
+        <div class="echo-section">
+            <h2>Echo WebSocket 测试</h2>
+            <div id="echo-status" class="connection-status disconnected">未连接</div>
+            <div class="input-group">
+                <label>服务器地址:</label>
+                <input type="text" id="echo-url" value="ws://localhost:8080/ws/echo">
+            </div>
+            <button onclick="connectEcho()">连接</button>
+            <button onclick="disconnectEcho()">断开</button>
+            <div class="input-group">
+                <label>发送消息:</label>
+                <input type="text" id="echo-input" placeholder="输入要回显的消息">
+                <button onclick="sendEchoMessage()">发送</button>
+            </div>
+            <div id="echo-messages" class="message-box"></div>
+        </div>
+
+        <!-- 消息路由 WebSocket 测试 -->
+        <div class="message-section">
+            <h2>消息路由 WebSocket 测试</h2>
+            <div id="message-status" class="connection-status disconnected">未连接</div>
+            <div class="input-group">
+                <label>服务器地址:</label>
+                <input type="text" id="message-url" value="ws://localhost:8080/ws/message">
+            </div>
+            <button onclick="connectMessage()">连接</button>
+            <button onclick="disconnectMessage()">断开</button>
+            
+            <h3>预设消息模板</h3>
+            <button onclick="sendLoginMessage()">发送登录请求</button>
+            <button onclick="sendUserInfoMessage()">发送用户信息请求</button>
+            
+            <h3>自定义消息</h3>
+            <div class="input-group">
+                <label>消息JSON:</label>
+                <textarea id="custom-message" rows="8" placeholder="输入JSON格式的消息">{
+  "id": "test-1",
+  "type": "request",
+  "route": "user.login",
+  "payload": {
+    "username": "admin",
+    "password": "password"
+  }
+}</textarea>
+            </div>
+            <button onclick="sendCustomMessage()">发送自定义消息</button>
+            
+            <div id="message-messages" class="message-box"></div>
+        </div>
+    </div>
+
+    <script>
+        let echoWs = null;
+        let messageWs = null;
+
+        // Echo WebSocket 相关函数
+        function connectEcho() {
+            const url = document.getElementById('echo-url').value;
+            echoWs = new WebSocket(url);
+            
+            echoWs.onopen = function() {
+                updateEchoStatus('connected', '已连接');
+                addEchoMessage('系统', '连接成功');
+            };
+            
+            echoWs.onmessage = function(event) {
+                addEchoMessage('服务器', event.data);
+            };
+            
+            echoWs.onclose = function() {
+                updateEchoStatus('disconnected', '连接已关闭');
+                addEchoMessage('系统', '连接已关闭');
+            };
+            
+            echoWs.onerror = function(error) {
+                addEchoMessage('错误', '连接错误: ' + error);
+            };
+        }
+
+        function disconnectEcho() {
+            if (echoWs) {
+                echoWs.close();
+                echoWs = null;
+            }
+        }
+
+        function sendEchoMessage() {
+            const input = document.getElementById('echo-input');
+            if (echoWs && echoWs.readyState === WebSocket.OPEN) {
+                echoWs.send(input.value);
+                addEchoMessage('客户端', input.value);
+                input.value = '';
+            } else {
+                alert('请先连接WebSocket');
+            }
+        }
+
+        function updateEchoStatus(className, text) {
+            const status = document.getElementById('echo-status');
+            status.className = 'connection-status ' + className;
+            status.textContent = text;
+        }
+
+        function addEchoMessage(sender, message) {
+            const messages = document.getElementById('echo-messages');
+            const time = new Date().toLocaleTimeString();
+            messages.innerHTML += `<div><strong>[${time}] ${sender}:</strong> ${message}</div>`;
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // 消息路由 WebSocket 相关函数
+        function connectMessage() {
+            const url = document.getElementById('message-url').value;
+            messageWs = new WebSocket(url);
+            
+            messageWs.onopen = function() {
+                updateMessageStatus('connected', '已连接');
+                addMessageMessage('系统', '连接成功');
+            };
+            
+            messageWs.onmessage = function(event) {
+                addMessageMessage('服务器', event.data);
+            };
+            
+            messageWs.onclose = function() {
+                updateMessageStatus('disconnected', '连接已关闭');
+                addMessageMessage('系统', '连接已关闭');
+            };
+            
+            messageWs.onerror = function(error) {
+                addMessageMessage('错误', '连接错误: ' + error);
+            };
+        }
+
+        function disconnectMessage() {
+            if (messageWs) {
+                messageWs.close();
+                messageWs = null;
+            }
+        }
+
+        function sendLoginMessage() {
+            const message = {
+                id: "login-" + Date.now(),
+                type: "request",
+                route: "user.login",
+                payload: {
+                    username: "admin",
+                    password: "password"
+                }
+            };
+            sendJsonMessage(message);
+        }
+
+        function sendUserInfoMessage() {
+            const message = {
+                id: "userinfo-" + Date.now(),
+                type: "request",
+                route: "user.info",
+                payload: {
+                    userId: "123"
+                }
+            };
+            sendJsonMessage(message);
+        }
+
+        function sendCustomMessage() {
+            const messageText = document.getElementById('custom-message').value;
+            try {
+                const message = JSON.parse(messageText);
+                sendJsonMessage(message);
+            } catch (e) {
+                alert('JSON格式错误: ' + e.message);
+            }
+        }
+
+        function sendJsonMessage(message) {
+            if (messageWs && messageWs.readyState === WebSocket.OPEN) {
+                const json = JSON.stringify(message);
+                messageWs.send(json);
+                addMessageMessage('客户端', json);
+            } else {
+                alert('请先连接WebSocket');
+            }
+        }
+
+        function updateMessageStatus(className, text) {
+            const status = document.getElementById('message-status');
+            status.className = 'connection-status ' + className;
+            status.textContent = text;
+        }
+
+        function addMessageMessage(sender, message) {
+            const messages = document.getElementById('message-messages');
+            const time = new Date().toLocaleTimeString();
+            
+            // 如果是JSON，格式化显示
+            let formattedMessage = message;
+            try {
+                const parsed = JSON.parse(message);
+                formattedMessage = JSON.stringify(parsed, null, 2);
+            } catch (e) {
+                // 不是JSON，保持原样
+            }
+            
+            messages.innerHTML += `<div><strong>[${time}] ${sender}:</strong><br><pre>${formattedMessage}</pre></div>`;
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // 页面加载时的事件监听
+        document.getElementById('echo-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendEchoMessage();
+            }
+        });
+    </script>
+</body>
+</html>

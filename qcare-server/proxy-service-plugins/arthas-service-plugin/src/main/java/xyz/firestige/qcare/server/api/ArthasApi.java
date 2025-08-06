@@ -9,18 +9,18 @@ import xyz.firestige.qcare.server.service.arthas.ArthasRemoteService;
 @RequestMapping("/api/arthas")
 public class ArthasApi {
 
-    private ArthasRemoteService service;
+    private final ArthasRemoteService service;
 
     public ArthasApi(ArthasRemoteService service) {
         this.service = service;
     }
 
-    @GetMapping("/summery")
-    public Mono<ServerResponse> getRuntimeSummery() {
-        return service.getRuntimeSummery()
-               .flatMap(summery -> ServerResponse.ok().bodyValue(summery))
-               .onErrorResume(e -> ServerResponse.status(500).bodyValue("Error fetching runtime summary: " + e.getMessage()));
-    }
+//    @GetMapping("/summery")
+//    public Mono<ServerResponse> getRuntimeSummery() {
+//        return service.getRuntimeSummery()
+//               .flatMap(summery -> ServerResponse.ok().bodyValue(summery))
+//               .onErrorResume(e -> ServerResponse.status(500).bodyValue("Error fetching runtime summary: " + e.getMessage()));
+//    }
 
     @GetMapping("/{id}/connect")
     public Mono<ServerResponse> connectToArthas(@PathVariable String id) {
@@ -43,24 +43,24 @@ public class ArthasApi {
                .onErrorResume(e -> ServerResponse.status(500).bodyValue("Error executing Arthas command: " + e.getMessage()));
     }
 
-    @PostMapping("/{id}/job")
-    public Mono<ServerResponse> submitArthasJob(@PathVariable String id, @RequestBody String jobDetails) {
-        return service.submitArthasJob(id, jobDetails)
-               .flatMap(response -> ServerResponse.ok().bodyValue(response))
-               .onErrorResume(e -> ServerResponse.status(500).bodyValue("Error submitting Arthas job: " + e.getMessage()));
-    }
-
-    @GetMapping("/{id}/job_results/{jobId}")
-    public Mono<ServerResponse> getArthasJobResults(@PathVariable String id, @PathVariable String jobId) {
-        return service.getArthasJobResults(id, jobId)
-               .flatMap(response -> ServerResponse.ok().bodyValue(response))
-               .onErrorResume(e -> ServerResponse.status(500).bodyValue("Error fetching Arthas job results: " + e.getMessage()));
-    }
-
-    @DeleteMapping("/{id}/job/{jobId}")
-    public Mono<ServerResponse> cancelArthasJob(@PathVariable String id, @PathVariable String jobId) {
-        return service.cancelArthasJob(id, jobId)
-               .flatMap(response -> ServerResponse.ok().bodyValue(response))
-               .onErrorResume(e -> ServerResponse.status(500).bodyValue("Error canceling Arthas job: " + e.getMessage()));
-    }
+//    @PostMapping("/{id}/job")
+//    public Mono<ServerResponse> submitArthasJob(@PathVariable String id, @RequestBody String jobDetails) {
+//        return service.submitArthasJob(id, jobDetails)
+//               .flatMap(response -> ServerResponse.ok().bodyValue(response))
+//               .onErrorResume(e -> ServerResponse.status(500).bodyValue("Error submitting Arthas job: " + e.getMessage()));
+//    }
+//
+//    @GetMapping("/{id}/job_results/{jobId}")
+//    public Mono<ServerResponse> getArthasJobResults(@PathVariable String id, @PathVariable String jobId) {
+//        return service.getArthasJobResults(id, jobId)
+//               .flatMap(response -> ServerResponse.ok().bodyValue(response))
+//               .onErrorResume(e -> ServerResponse.status(500).bodyValue("Error fetching Arthas job results: " + e.getMessage()));
+//    }
+//
+//    @DeleteMapping("/{id}/job/{jobId}")
+//    public Mono<ServerResponse> cancelArthasJob(@PathVariable String id, @PathVariable String jobId) {
+//        return service.cancelArthasJob(id, jobId)
+//               .flatMap(response -> ServerResponse.ok().bodyValue(response))
+//               .onErrorResume(e -> ServerResponse.status(500).bodyValue("Error canceling Arthas job: " + e.getMessage()));
+//    }
 }

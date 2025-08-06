@@ -9,7 +9,7 @@ public interface ArthasRemoteService {
     Mono<Void> connectToArthasConsole(String instanceId);
     Mono<Void> disconnectFromArthasConsole(String instanceId);
     Mono<String> executeArthasCommand(String instanceId, String command);
-    Mono<Void> submiteAsyncJob(String instanceId, String jobName, String jobCommand);
+    Mono<Void> submitAsyncJob(String instanceId, String jobName, String jobCommand);
     Mono<JobResult> getJobResult(String instanceId, String jobId);
     Mono<Void> cancelJob(String instanceId, String jobId);
 }
