@@ -3,6 +3,9 @@ package xyz.firestige.qcare.server.core.ws.mapping;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.springframework.web.reactive.socket.WebSocketSession;
+
+import reactor.core.publisher.Mono;
 import xyz.firestige.qcare.server.core.ws.Message;
 import xyz.firestige.qcare.server.core.ws.annotation.MsgMapping;
 
@@ -86,8 +89,8 @@ public class HandlerMapping {
         return false;
     }
 
-    public Object getHandler() {
-        return handler;
+    public Mono<Object> getHandler(WebSocketSession session) {
+        return Mono.just(handler);
     }
 
     public Method getMethod() {

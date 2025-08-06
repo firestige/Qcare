@@ -18,6 +18,7 @@ import org.springframework.web.reactive.socket.WebSocketHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import xyz.firestige.qcare.server.core.ws.MessageDispatcher;
 import xyz.firestige.qcare.server.core.ws.annotation.MsgMapping;
 import xyz.firestige.qcare.server.core.ws.annotation.OnClose;
 import xyz.firestige.qcare.server.core.ws.annotation.OnError;
@@ -25,7 +26,6 @@ import xyz.firestige.qcare.server.core.ws.annotation.OnMessage;
 import xyz.firestige.qcare.server.core.ws.annotation.OnOpen;
 import xyz.firestige.qcare.server.core.ws.annotation.Websocket;
 import xyz.firestige.qcare.server.core.ws.annotation.WsMsgController;
-import xyz.firestige.qcare.server.core.ws.dispatcher.MessageDispatcher;
 import xyz.firestige.qcare.server.core.ws.handler.AnnotationWebSocketHandler;
 import xyz.firestige.qcare.server.core.ws.manager.WebSocketSessionManager;
 
