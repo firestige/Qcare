@@ -1,6 +1,5 @@
 package xyz.firestige.qcare.server.core.ws.server.support;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -16,20 +15,17 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
-import xyz.firestige.qcare.server.core.ws.DispatchExceptionHandler;
-import xyz.firestige.qcare.server.core.ws.HandlerResult;
-import xyz.firestige.qcare.server.core.ws.Message;
-import xyz.firestige.qcare.server.core.ws.WsExchange;
-import xyz.firestige.qcare.server.core.ws.method.ControllerMethodResolver;
-import xyz.firestige.qcare.server.core.ws.method.HandlerMethod;
-import xyz.firestige.qcare.server.core.ws.method.InvocableHandlerMethod;
+import xyz.firestige.qcare.server.core.ws.server.DispatchExceptionHandler;
+import xyz.firestige.qcare.server.core.ws.server.HandlerResult;
+import xyz.firestige.qcare.server.core.ws.server.WsExchange;
+import xyz.firestige.qcare.server.core.ws.server.method.ControllerMethodResolver;
+import xyz.firestige.qcare.server.core.ws.server.method.HandlerMethod;
+import xyz.firestige.qcare.server.core.ws.server.method.InvocableHandlerMethod;
 import xyz.firestige.qcare.server.core.ws.server.HandlerAdapter;
 
 public class MessageMappingHandlerAdapter implements HandlerAdapter, DispatchExceptionHandler, ApplicationContextAware, InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(MessageMappingHandlerAdapter.class);
     private ArgumentResolverConfigurer argumentResolverConfigurer;
-    private Scheduler scheduler;
-    private ReactiveAdapterRegistry reactiveAdapterRegistry;
     private ConfigurableApplicationContext ctx;
     private ControllerMethodResolver methodResolver;
 
@@ -39,8 +35,6 @@ public class MessageMappingHandlerAdapter implements HandlerAdapter, DispatchExc
     public void afterPropertiesSet() throws Exception {
         this.argumentResolverConfigurer = Optional.ofNullable(this.argumentResolverConfigurer)
                 .orElseGet(ArgumentResolverConfigurer::new);
-        this.reactiveAdapterRegistry = Optional.ofNullable(this.reactiveAdapterRegistry)
-                .orElseGet(ReactiveAdapterRegistry::getSharedInstance);
         this.methodResolver = new ControllerMethodResolver();
     }
 
@@ -67,11 +61,11 @@ public class MessageMappingHandlerAdapter implements HandlerAdapter, DispatchExc
         HandlerMethod method = (HandlerMethod) handler;
 
         InvocableHandlerMethod invocableMethod = this.methodResolver.getInvocableHandlerMethod(method);
-        DispatchExceptionHandler exceptionHandler = (s, ex) -> handleException(s, ex, method);
+        DispatchExceptionHandler exceptionHandler = (s, ex) -> handleException(s.session(), ex, method);
 
         Mono<HandlerResult> resultMono = invocableMethod.invoke(exchange)
                 .doOnNext(result -> result.withExceptionHandler(exceptionHandler))
-                .onErrorResume(ex -> exceptionHandler.handleException(session, ex));
+                .onErrorResume(ex -> exceptionHandler.handleException(exchange, ex));
         return resultMono;
     }
 

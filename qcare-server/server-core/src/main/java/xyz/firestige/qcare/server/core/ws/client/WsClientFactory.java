@@ -3,7 +3,7 @@ package xyz.firestige.qcare.server.core.ws.client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import xyz.firestige.qcare.server.core.ws.manager.WebSocketSessionManager;
+import xyz.firestige.qcare.server.core.ws.link.WebSocketSessionManager;
 
 /**
  * WebSocket客户端工厂

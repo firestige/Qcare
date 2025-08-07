@@ -8,8 +8,8 @@ import org.springframework.web.reactive.socket.client.WebSocketClient;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import xyz.firestige.qcare.server.core.ws.Message;
-import xyz.firestige.qcare.server.core.ws.manager.WebSocketSessionManager;
+import xyz.firestige.qcare.server.core.ws.server.Message;
+import xyz.firestige.qcare.server.core.ws.link.WebSocketSessionManager;
 
 /**
  * WebSocket客户端统一入口

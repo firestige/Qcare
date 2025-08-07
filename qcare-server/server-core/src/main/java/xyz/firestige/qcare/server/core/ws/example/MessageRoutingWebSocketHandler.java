@@ -7,18 +7,12 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import reactor.core.publisher.Mono;
-import xyz.firestige.qcare.server.core.ws.Message;
-import xyz.firestige.qcare.server.core.ws.Dispatcher;
-import xyz.firestige.qcare.server.core.ws.annotation.OnClose;
-import xyz.firestige.qcare.server.core.ws.annotation.OnError;
-import xyz.firestige.qcare.server.core.ws.annotation.OnMessage;
-import xyz.firestige.qcare.server.core.ws.annotation.OnOpen;
-import xyz.firestige.qcare.server.core.ws.annotation.Websocket;
+import xyz.firestige.qcare.server.core.ws.server.Message;
+import xyz.firestige.qcare.server.core.ws.server.Dispatcher;
 
 /**
  * 消息路由WebSocket处理器
  */
-@Websocket("/ws/message")
 public class MessageRoutingWebSocketHandler {
 
     @Autowired
@@ -27,12 +21,10 @@ public class MessageRoutingWebSocketHandler {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @OnOpen
     public void onOpen(WebSocketSession session) {
         System.out.println("消息路由WebSocket连接建立: " + session.getId());
     }
 
-    @OnMessage
     public void onMessage(WebSocketSession session, WebSocketMessage message) {
         try {
             String messageText = message.getPayloadAsText();
@@ -64,12 +56,10 @@ public class MessageRoutingWebSocketHandler {
         }
     }
 
-    @OnError
     public void onError(WebSocketSession session, Throwable error) {
         System.err.println("WebSocket错误: " + error.getMessage());
     }
 
-    @OnClose
     public void onClose(WebSocketSession session) {
         System.out.println("WebSocket连接关闭: " + session.getId());
     }

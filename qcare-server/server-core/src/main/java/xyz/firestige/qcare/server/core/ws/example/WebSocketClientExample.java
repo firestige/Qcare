@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Mono;
-import xyz.firestige.qcare.server.core.ws.Message;
+import xyz.firestige.qcare.server.core.ws.server.Message;
 import xyz.firestige.qcare.server.core.ws.client.WsClient;
 import xyz.firestige.qcare.server.core.ws.client.WsClientFactory;
 

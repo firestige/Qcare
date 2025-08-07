@@ -2,9 +2,9 @@ package xyz.firestige.qcare.server.core.ws.example;
 
 import org.springframework.web.reactive.socket.WebSocketSession;
 
-import xyz.firestige.qcare.server.core.ws.Message;
-import xyz.firestige.qcare.server.core.ws.annotation.RouteMapping;
-import xyz.firestige.qcare.server.core.ws.annotation.WsMsgController;
+import xyz.firestige.qcare.server.core.ws.server.Message;
+import xyz.firestige.qcare.server.core.ws.server.annotation.RouteMapping;
+import xyz.firestige.qcare.server.core.ws.server.annotation.WsMsgController;
 
 /**
  * 消息控制器示例

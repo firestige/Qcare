@@ -5,7 +5,7 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import reactor.core.publisher.Mono;
-import xyz.firestige.qcare.server.core.ws.Message;
+import xyz.firestige.qcare.server.core.ws.server.Message;
 
 /**
  * WebSocket消息发送工具类

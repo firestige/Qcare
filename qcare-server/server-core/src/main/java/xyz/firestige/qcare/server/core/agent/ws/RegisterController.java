@@ -2,8 +2,8 @@ package xyz.firestige.qcare.server.core.agent.ws;
 
 import reactor.core.publisher.Mono;
 import xyz.firestige.qcare.server.common.ws.message.*;
-import xyz.firestige.qcare.server.core.ws.annotation.RouteMapping;
-import xyz.firestige.qcare.server.core.ws.annotation.WsMsgController;
+import xyz.firestige.qcare.server.core.ws.server.annotation.RouteMapping;
+import xyz.firestige.qcare.server.core.ws.server.annotation.WsMsgController;
 
 @WsMsgController
 public class RegisterController{

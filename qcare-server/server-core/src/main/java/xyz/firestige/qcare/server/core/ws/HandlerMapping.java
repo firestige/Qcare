@@ -1,9 +1,0 @@
-package xyz.firestige.qcare.server.core.ws;
-
-import reactor.core.publisher.Mono;
-
-public interface HandlerMapping {
-    String URI_TEMPLATE = "uriTemplate";
-
-    Mono<Object> getHandler(WsExchange exchange);
-}
