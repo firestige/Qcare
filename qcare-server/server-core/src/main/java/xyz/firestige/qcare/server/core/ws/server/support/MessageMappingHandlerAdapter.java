@@ -19,6 +19,7 @@ import reactor.core.scheduler.Scheduler;
 import xyz.firestige.qcare.server.core.ws.DispatchExceptionHandler;
 import xyz.firestige.qcare.server.core.ws.HandlerResult;
 import xyz.firestige.qcare.server.core.ws.Message;
+import xyz.firestige.qcare.server.core.ws.WsExchange;
 import xyz.firestige.qcare.server.core.ws.method.ControllerMethodResolver;
 import xyz.firestige.qcare.server.core.ws.method.HandlerMethod;
 import xyz.firestige.qcare.server.core.ws.method.InvocableHandlerMethod;
@@ -51,7 +52,7 @@ public class MessageMappingHandlerAdapter implements HandlerAdapter, DispatchExc
     }
 
     @Override
-    public Mono<HandlerResult> handleException(WebSocketSession session, Throwable exception) {
+    public Mono<HandlerResult> handleException(WsExchange exchange, Throwable exception) {
         // TODO: Implement exception handling logic
         return Mono.empty();
     }
@@ -62,13 +63,13 @@ public class MessageMappingHandlerAdapter implements HandlerAdapter, DispatchExc
     }
 
     @Override
-    public Mono<HandlerResult> handle(Message<?> message, WebSocketSession session, Object handler) {
+    public Mono<HandlerResult> handle(WsExchange exchange, Object handler) {
         HandlerMethod method = (HandlerMethod) handler;
 
         InvocableHandlerMethod invocableMethod = this.methodResolver.getInvocableHandlerMethod(method);
         DispatchExceptionHandler exceptionHandler = (s, ex) -> handleException(s, ex, method);
 
-        Mono<HandlerResult> resultMono = invocableMethod.invoke(session, message)
+        Mono<HandlerResult> resultMono = invocableMethod.invoke(exchange)
                 .doOnNext(result -> result.withExceptionHandler(exceptionHandler))
                 .onErrorResume(ex -> exceptionHandler.handleException(session, ex));
         return resultMono;

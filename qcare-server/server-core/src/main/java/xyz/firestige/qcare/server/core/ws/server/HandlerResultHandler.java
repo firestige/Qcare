@@ -4,8 +4,9 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 
 import reactor.core.publisher.Mono;
 import xyz.firestige.qcare.server.core.ws.HandlerResult;
+import xyz.firestige.qcare.server.core.ws.WsExchange;
 
 public interface HandlerResultHandler {
     boolean supports(HandlerResult result);
-    Mono<Void> handleResult(WebSocketSession session, HandlerResult result);
+    Mono<Void> handleResult(WsExchange exchange, HandlerResult result);
 }

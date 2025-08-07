@@ -9,15 +9,17 @@ import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
 import xyz.firestige.qcare.server.core.ws.HandlerMapping;
 import xyz.firestige.qcare.server.core.ws.Message;
+import xyz.firestige.qcare.server.core.ws.WsExchange;
 import xyz.firestige.qcare.server.core.ws.annotation.RouteMapping;
 import xyz.firestige.qcare.server.core.ws.annotation.WsMsgController;
 import xyz.firestige.qcare.server.core.ws.method.HandlerMethod;
+import xyz.firestige.qcare.server.core.ws.server.WsHandler;
 
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class WsMessageMappingHandlerMapping extends ApplicationObjectSupport implements HandlerMapping, InitializingBean {
+public class WsMessageMappingHandlerMapping extends WsMessageMappingInfoHandlerMapping {
 
     private final Map<String, HandlerMethod> handlerMethods = new ConcurrentHashMap<>();
 
@@ -27,35 +29,8 @@ public class WsMessageMappingHandlerMapping extends ApplicationObjectSupport imp
     }
 
     @Override
-    public Mono<Object> getHandler(Message<?> msg) {
-        return Mono.justOrEmpty(lookupHandlerMethod(msg));
-    }
-
-    /**
-     * 初始化处理器方法映射
-     */
-    private void initHandlerMethods() {
-        ApplicationContext context = getApplicationContext();
-        if (context == null) {
-            return;
-        }
-
-        // 获取所有标记了@WsMsgController的bean
-        String[] controllerNames = context.getBeanNamesForAnnotation(WsMsgController.class);
-
-        for (String controllerName : controllerNames) {
-            Object controller = context.getBean(controllerName);
-            Class<?> controllerType = controller.getClass();
-
-            // 扫描控制器中的处理方法
-            Map<Method, RouteMapping> methods = MethodIntrospector.selectMethods(controllerType,
-                (MethodIntrospector.MetadataLookup<RouteMapping>) method ->
-                    AnnotatedElementUtils.findMergedAnnotation(method, RouteMapping.class));
-
-            methods.forEach((method, mapping) -> {
-                registerHandlerMethod(controller, method, mapping);
-            });
-        }
+    public Mono<Object> getHandler(WsExchange exchange) {
+        return Mono.justOrEmpty(lookupHandlerMethod(exchange.message()));
     }
 
     /**
@@ -96,12 +71,5 @@ public class WsMessageMappingHandlerMapping extends ApplicationObjectSupport imp
         }
 
         return handlerMethods.get(route);
-    }
-
-    /**
-     * 获取所有注册的路由映射
-     */
-    public Map<String, HandlerMethod> getHandlerMethods() {
-        return new ConcurrentHashMap<>(handlerMethods);
     }
 }

@@ -10,18 +10,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.lang.NonNull;
-import org.springframework.web.reactive.socket.WebSocketSession;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import xyz.firestige.qcare.server.core.ws.server.HandlerAdapter;
 import xyz.firestige.qcare.server.core.ws.server.HandlerResultHandler;
-import xyz.firestige.qcare.server.core.ws.server.MessageHandler;
+import xyz.firestige.qcare.server.core.ws.server.WsHandler;
 
 /**
  * 消息分发器，类似于DispatcherHandler
  */
-public class Dispatcher implements MessageHandler, ApplicationContextAware {
+public class Dispatcher implements WsHandler, ApplicationContextAware {
 
     private List<HandlerMapping> handlerMappings;
     private List<HandlerAdapter> handlerAdapters;
@@ -52,13 +51,13 @@ public class Dispatcher implements MessageHandler, ApplicationContextAware {
     }
 
     @Override
-    public Mono<Void> handle(WebSocketSession session, Message<?> message) {
+    public Mono<Void> handle(WsExchange exchange) {
         return Flux.fromIterable(this.handlerMappings)
-                .concatMap(mapping -> mapping.getHandler(message))
+                .concatMap(mapping -> mapping.getHandler(exchange))
                 .next()
                 .switchIfEmpty(createNotFoundError())
-                .onErrorResume(e -> handleResultMono(session, Mono.error(e)))
-                .flatMap(handler -> handleMessageWith(message, session, handler));
+                .onErrorResume(e -> handleResultMono(exchange, Mono.error(e)))
+                .flatMap(handler -> handleMessageWith(exchange, handler));
     }
 
 
@@ -67,38 +66,38 @@ public class Dispatcher implements MessageHandler, ApplicationContextAware {
         return Mono.defer(() -> Mono.error(new RuntimeException("No handler found for message")));
     }
 
-    private Mono<Void> handleMessageWith(Message<?> message, WebSocketSession session, Object handler) {
+    private Mono<Void> handleMessageWith(WsExchange exchange, Object handler) {
         for (HandlerAdapter adapter : this.handlerAdapters) {
             if (adapter.supports(handler)) {
-                Mono<HandlerResult> resultMono = adapter.handle(message, session, handler);
-                return handleResultMono(session, resultMono);
+                Mono<HandlerResult> resultMono = adapter.handle(exchange, handler);
+                return handleResultMono(exchange, resultMono);
             }
         }
         return Mono.error(new RuntimeException("No handler adapter found for " + handler.getClass().getName()));
     }
 
-    private Mono<Void> handleResultMono(WebSocketSession session, Mono<HandlerResult> resultMono) {
+    private Mono<Void> handleResultMono(WsExchange exchange, Mono<HandlerResult> resultMono) {
         for (HandlerAdapter adapter : this.handlerAdapters) {
             if (adapter instanceof DispatchExceptionHandler exceptionHandler) {
-                resultMono = resultMono.onErrorResume(e -> exceptionHandler.handleException(session, e));
+                resultMono = resultMono.onErrorResume(e -> exceptionHandler.handleException(exchange, e));
             }
         }
         return resultMono.flatMap(result -> {
-            Mono<Void> voidMono = handleResult(session, result, "Handler" + result.getHandler());
+            Mono<Void> voidMono = handleResult(exchange, result, "Handler" + result.getHandler());
             if (result.getExceptionHandler() != null) {
                 voidMono = voidMono.onErrorResume(e -> 
-                        result.getExceptionHandler().handleException(session, e).flatMap(r ->
-                                handleResult(session, r, "ExceptionHandler" + r.getHandler() + ", error=\"" + e.getMessage() + "\"")));
+                        result.getExceptionHandler().handleException(exchange, e).flatMap(r ->
+                                handleResult(exchange, r, "ExceptionHandler" + r.getHandler() + ", error=\"" + e.getMessage() + "\"")));
             }
             return voidMono;
         });
     }
 
-    private Mono<Void> handleResult(WebSocketSession session, HandlerResult result, String desc) {
+    private Mono<Void> handleResult(WsExchange exchange, HandlerResult result, String desc) {
         for (HandlerResultHandler handler : this.resultHandlers) {
             if (handler.supports(result)) {
                 desc += "[DispatcherHandler]";
-                return handler.handleResult(session, result).checkpoint(desc);
+                return handler.handleResult(exchange, result).checkpoint(desc);
             }
         }
         return Mono.error(new RuntimeException("No result handler found for " + result.getReturnValue()));

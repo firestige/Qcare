@@ -5,5 +5,5 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
 
 public interface DispatchExceptionHandler {
-    Mono<HandlerResult> handleException(WebSocketSession session, Throwable exception);
+    Mono<HandlerResult> handleException(WsExchange exchange, Throwable exception);
 }
