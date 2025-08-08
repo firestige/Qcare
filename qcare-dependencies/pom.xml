@@ -13,8 +13,6 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.cloud.version>2023.0.6</spring.cloud.version>
-        <spring.cloud.alibaba.version>2023.0.3.3</spring.cloud.alibaba.version>
         <spring.boot.version>3.2.12</spring.boot.version>
         <spring.boot.maven.plugin.version>3.2.12</spring.boot.maven.plugin.version>
         <lombok.version>1.18.32</lombok.version>
@@ -23,6 +21,7 @@
         <java.webSocket.version>1.6.0</java.webSocket.version>
         <springdoc.openapi.webflux.version>2.5.0</springdoc.openapi.webflux.version>
         <openapi.jackson.databind.nullable.version>0.2.6</openapi.jackson.databind.nullable.version>
+        <micronaut.version>4.9.2</micronaut.version>
     </properties>
 
     <dependencyManagement>
@@ -35,16 +34,9 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring.cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.alibaba.cloud</groupId>
-                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-                <version>${spring.cloud.alibaba.version}</version>
+                <groupId>io.micronaut.platform</groupId>
+                <artifactId>micronaut-platform</artifactId>
+                <version>${micronaut.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
