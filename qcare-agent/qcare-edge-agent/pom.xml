@@ -19,6 +19,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>xyz.firestige.qcare</groupId>
+            <artifactId>agent-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!-- Micronaut Core -->
         <dependency>
             <groupId>io.micronaut</groupId>

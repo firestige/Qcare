@@ -1,13 +1,9 @@
 package xyz.firestige.qcare.server.core.ws.config;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,12 +16,11 @@ import org.springframework.web.reactive.socket.WebSocketHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import xyz.firestige.qcare.server.core.ws.server.Dispatcher;
-import xyz.firestige.qcare.server.core.ws.server.annotation.RouteMapping;
+import xyz.firestige.qcare.server.core.ws.server.support.MessagePayloadResultHandler;
+import xyz.firestige.qcare.server.core.ws.server.support.WsMessageResultHandler;
 import xyz.firestige.qcare.server.core.ws.server.annotation.WebSocket;
-import xyz.firestige.qcare.server.core.ws.server.annotation.WsMsgController;
 import xyz.firestige.qcare.server.core.ws.link.AnnotationWebSocketHandler;
 import xyz.firestige.qcare.server.core.ws.link.WebSocketLifeCircleAware;
-import xyz.firestige.qcare.server.core.ws.link.WebSocketSessionManager;
 import xyz.firestige.qcare.server.core.ws.server.mapping.WsMessageMappingHandlerMapping;
 import xyz.firestige.qcare.server.core.ws.server.support.MessageMappingHandlerAdapter;
 
@@ -36,20 +31,11 @@ import xyz.firestige.qcare.server.core.ws.server.support.MessageMappingHandlerAd
 @EnableWebFlux
 public class WebSocketAutoConfiguration {
 
-    @Autowired
-    private ApplicationContext applicationContext;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private WebSocketSessionManager sessionManager;
-
     @Bean
-    public HandlerMapping webSocketHandlerMapping() {
+    public HandlerMapping webSocketHandlerMapping(ApplicationContext ctx) {
         Map<String, WebSocketHandler> map = new HashMap<>();
 
-        Map<String, WebSocketLifeCircleAware> awareBeans = applicationContext.getBeansOfType(WebSocketLifeCircleAware.class);
+        Map<String, WebSocketLifeCircleAware> awareBeans = ctx.getBeansOfType(WebSocketLifeCircleAware.class);
         for (WebSocketLifeCircleAware aware : awareBeans.values()) {
             Class<?> clazz = aware.getClass();
             WebSocket websocketAnnotation = clazz.getAnnotation(WebSocket.class);
@@ -67,28 +53,38 @@ public class WebSocketAutoConfiguration {
     }
 
     private WebSocketHandler createWebSocketHandler(WebSocketLifeCircleAware aware) {
-        return new AnnotationWebSocketHandler(aware, sessionManager);
+        return new AnnotationWebSocketHandler(aware);
     }
 
     @Bean
-    public WsMessageMappingHandlerMapping wsMessageMappingHandlerMapping() {
+    public WsMessageMappingHandlerMapping wsMessageMappingHandlerMapping(ApplicationContext ctx) {
         WsMessageMappingHandlerMapping mapping = new WsMessageMappingHandlerMapping();
         mapping.setOrder(1); // 确保在WebSocket处理器之后执行
-        mapping.setApplicationContext(applicationContext);
+        mapping.setApplicationContext(ctx);
         return mapping;
     }
 
-    @Bean
-    public Dispatcher messageDispatcher(ApplicationContext ctx) {
+    @Bean("dispatcher")
+    public Dispatcher dispatcher(ApplicationContext ctx) {
         return new Dispatcher(ctx);
     }
 
     @Bean
-    public MessageMappingHandlerAdapter messageMappingHandlerAdapter() {
+    public MessageMappingHandlerAdapter messageMappingHandlerAdapter(ApplicationContext ctx) {
         MessageMappingHandlerAdapter adapter = new MessageMappingHandlerAdapter();
-        adapter.setApplicationContext(applicationContext);
+        adapter.setApplicationContext(ctx);
 
         return adapter;
+    }
+
+    @Bean
+    public WsMessageResultHandler wsMessageResultHandler(ObjectMapper objectMapper) {
+        return new WsMessageResultHandler(objectMapper);
+    }
+
+    @Bean
+    public MessagePayloadResultHandler messagePayloadResultHandler(ObjectMapper objectMapper) {
+        return new MessagePayloadResultHandler(objectMapper);
     }
 
 }

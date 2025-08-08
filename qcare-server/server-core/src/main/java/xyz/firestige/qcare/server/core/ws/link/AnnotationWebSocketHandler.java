@@ -11,37 +11,26 @@ import reactor.core.publisher.Mono;
  */
 public class AnnotationWebSocketHandler implements WebSocketHandler {
     
-    private final WebSocketLifeCircleAware handler;
-    private final WebSocketSessionManager sessionManager;
+    private final WebSocketLifeCircleAware delegator;
 
-    public AnnotationWebSocketHandler(WebSocketLifeCircleAware handler, WebSocketSessionManager sessionManager) {
-        this.handler = handler;
-        this.sessionManager = sessionManager;
+    public AnnotationWebSocketHandler(WebSocketLifeCircleAware handler) {
+        this.delegator = handler;
     }
 
     @Override
     @NonNull
-    public Mono<Void> handle(@NonNull WebSocketSession session) {
-        // 获取连接URL，用于会话管理器注册
-        String url = session.getHandshakeInfo().getUri().toString();
-        
-        // 注册会话到管理器
-        sessionManager.registerSession(url, session);
-        
+    public Mono<Void> handle(@NonNull final WebSocketSession session) {
         // 连接建立时调用 onOpen
-        return handler.onOpen(session)
+        return delegator.onOpen(session)
                 .thenMany(session.receive())
-                .flatMap(msg -> handler.onMessage(session, msg))
-                .onErrorContinue((cause, unused) -> handler.onError(cause, session))
+                .flatMap(msg -> delegator.onMessage(session, msg))
+                .onErrorContinue((cause, unused) -> delegator.onError(cause, session))
                 .doFinally(signalType -> doFinally(session))
                 .then();
     }
 
     private void doFinally(WebSocketSession session) {
         // 连接关闭时调用 onClose
-        handler.onClose(session);
-
-        // 从管理器中注销会话
-        sessionManager.unregisterSession(session.getHandshakeInfo().getUri().toString());
+        delegator.onClose(session);
     }
 }

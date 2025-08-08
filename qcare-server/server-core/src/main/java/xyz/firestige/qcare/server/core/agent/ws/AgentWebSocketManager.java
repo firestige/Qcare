@@ -1,8 +1,8 @@
 package xyz.firestige.qcare.server.core.agent.ws;
 
+import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Mono;
-import xyz.firestige.qcare.server.core.agent.model.AgentInfo;
 
 public interface AgentWebSocketManager {
     /**
@@ -13,7 +13,7 @@ public interface AgentWebSocketManager {
      * @param session ws会话
      * @return true-成功，false-失败
      */
-    Mono<Boolean> join(String agentId, WebSocketSession session);
+    Mono<Void> join(String agentId, WebSocketSession session);
 
     /**
      * 验证令牌
@@ -22,16 +22,15 @@ public interface AgentWebSocketManager {
      * @param agentId agent id
      * @return true-成功，false-失败
      */
-    Mono<Boolean> validateConnectionToken(String token, String agentId);
+    boolean validateConnectionToken(String token, String agentId);
 
     /**
      * 为agent移除ws会话
      * 移除ws会话的同时会
      *
      * @param agentId agent id
-     * @return true-成功，false-失败
      */
-    Mono<Boolean> leave(String agentId);
+    void leave(String agentId);
 
     /**
      * 判断是否已连接
@@ -39,5 +38,8 @@ public interface AgentWebSocketManager {
      * @param agentId agent id
      * @return true-已连接，false-未连接
      */
-    Mono<Boolean> isConnected(String agentId);
+    boolean isConnected(String agentId);
+
+    @Nullable
+    WebSocketSession getSession(String agentId);
 }

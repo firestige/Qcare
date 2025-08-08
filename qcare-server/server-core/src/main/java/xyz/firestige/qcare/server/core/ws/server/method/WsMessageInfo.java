@@ -11,19 +11,19 @@ import xyz.firestige.qcare.server.core.ws.server.condition.RoutePatternCondition
 import java.util.*;
 
 public final class WsMessageInfo implements WsMessageCondition<WsMessageInfo> {
-    private static final RoutePatternCondition EMPTY_PARTTERNS = new RoutePatternCondition();
+    private static final RoutePatternCondition EMPTY_PATTERNS = new RoutePatternCondition();
 
     private final String name;
     private final RoutePatternCondition patternCondition;
     // 以后扩展其他condition
-    private int hashCode;
+    private final int hashCode;
     private BuilderConfiguration option;
 
     private WsMessageInfo(String name, RoutePatternCondition patternCondition, BuilderConfiguration option) {
         this.name = StringUtils.hasText(name) ? name : null;
-        this.patternCondition = Objects.nonNull(patternCondition) ? patternCondition : EMPTY_PARTTERNS;
+        this.patternCondition = Objects.nonNull(patternCondition) ? patternCondition : EMPTY_PATTERNS;
         this.option = option;
-        this.hashCode = caculateHashCode(patternCondition);
+        this.hashCode = calculateHashCode(patternCondition);
     }
 
     public String getName() {
@@ -40,12 +40,12 @@ public final class WsMessageInfo implements WsMessageCondition<WsMessageInfo> {
 
     @Override
     public WsMessageInfo combine(WsMessageInfo other) {
-        String name = conbineNames(other);
+        String name = combineNames(other);
         RoutePatternCondition patterns = this.patternCondition.combine(other.getPatternCondition());
         return new WsMessageInfo(name, patterns, this.option);
     }
 
-    private String conbineNames(WsMessageInfo other) {
+    private String combineNames(WsMessageInfo other) {
         if (StringUtils.hasText(this.name) && StringUtils.hasText(other.getName())) {
             return this.name + "#" + other.getName();
         } else if (StringUtils.hasText(this.name)) {
@@ -77,9 +77,7 @@ public final class WsMessageInfo implements WsMessageCondition<WsMessageInfo> {
     public boolean equals(Object other) {
         return this == other
                 || (other instanceof WsMessageInfo that
-                        && this.name.equals(that.name)
-                        && this.patternCondition.equals(that.patternCondition)
-                        && this.option.equals(that.option));
+                        && this.patternCondition.equals(that.patternCondition));
     }
 
     @Override
@@ -88,13 +86,13 @@ public final class WsMessageInfo implements WsMessageCondition<WsMessageInfo> {
     }
 
     // 计算hashCode，扩展Condition之后这里也要加入对应的condition
-    private static int caculateHashCode(RoutePatternCondition pattern) {
+    private static int calculateHashCode(RoutePatternCondition pattern) {
         return Objects.hash(pattern);
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder('{');
+        StringBuilder sb = new StringBuilder("{");
         if (!this.patternCondition.isEmpty()) {
             Set<PathPattern> patterns = this.patternCondition.getPatterns();
             sb.append(' ').append(patterns.size() == 1 ? patterns.iterator().next() : patterns);
@@ -113,7 +111,7 @@ public final class WsMessageInfo implements WsMessageCondition<WsMessageInfo> {
 
     public interface Builder {
         Builder route(String... route);
-        // 以后可以添加其他和Mesaage或者session相关的属性
+        // 以后可以添加其他和Message或者session相关的属性
         Builder mappingName(String name);
         Builder option(BuilderConfiguration option);
         WsMessageInfo build();

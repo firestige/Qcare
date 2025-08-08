@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
-import xyz.firestige.qcare.server.core.ws.server.Message;
+import xyz.firestige.qcare.protocol.api.Message;
 
 /**
  * WebSocket会话管理器

@@ -9,4 +9,14 @@ public record RegisterMessage(
         String serviceName,
         Instant timestamp
 ) {
+    @Override
+    public String toString() {
+        return "RegisterMessage{" +
+                "agentId='" + agentId + '\'' +
+                ", ip='" + ip + '\'' +
+                ", instanceId='" + instanceId + '\'' +
+                ", serviceName='" + serviceName + '\'' +
+                ", timestamp=" + timestamp +
+                '}';
+    }
 }

@@ -6,6 +6,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 
 import reactor.core.publisher.Mono;
+import xyz.firestige.qcare.protocol.api.Message;
 import xyz.firestige.qcare.server.core.ws.server.method.HandlerMethod;
 
 public class HandlerResult {
@@ -44,6 +45,10 @@ public class HandlerResult {
 
     public ResolvableType getReturnType() {
         return returnType;
+    }
+
+    public MethodParameter getReturnTypeSource() {
+        return (MethodParameter) this.returnType.getSource();
     }
 
     public MethodParameter getReturnTypeParameter() {

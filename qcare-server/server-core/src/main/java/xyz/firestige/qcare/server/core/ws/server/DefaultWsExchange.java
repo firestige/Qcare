@@ -1,6 +1,7 @@
 package xyz.firestige.qcare.server.core.ws.server;
 
 import org.springframework.web.reactive.socket.WebSocketSession;
+import xyz.firestige.qcare.protocol.api.Message;
 
 import java.util.HashMap;
 import java.util.Map;

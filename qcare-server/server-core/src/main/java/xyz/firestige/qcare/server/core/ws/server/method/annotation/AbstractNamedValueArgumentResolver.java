@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class AbstractNamedValueArgumentResolver implements HandlerMethodArgumentResolver {
+public abstract class AbstractNamedValueArgumentResolver extends HandlerMethodArgumentResolverSupport {
     private final ConfigurableBeanFactory beanFactory;
     private final BeanExpressionContext expressionContext;
     private final Map<MethodParameter, NamedValueInfo> namedValueInfoMap = new ConcurrentHashMap<>();

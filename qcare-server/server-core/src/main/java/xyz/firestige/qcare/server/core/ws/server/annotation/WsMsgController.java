@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 
 /**
  * WebSocket消息控制器注解
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Controller;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
+@ResponseMessage
 public @interface WsMsgController {
     /**
      * 控制器名称

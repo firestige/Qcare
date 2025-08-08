@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -19,6 +21,7 @@ import reactor.core.publisher.Mono;
  */
 public class Dispatcher implements WsHandler, ApplicationContextAware {
 
+    private static final Logger log = LoggerFactory.getLogger(Dispatcher.class);
     private List<HandlerMapping> handlerMappings;
     private List<HandlerAdapter> handlerAdapters;
     private List<HandlerResultHandler> resultHandlers;
@@ -52,6 +55,7 @@ public class Dispatcher implements WsHandler, ApplicationContextAware {
         return Flux.fromIterable(this.handlerMappings)
                 .concatMap(mapping -> mapping.getHandler(exchange))
                 .next()
+                .doOnNext(o -> log.info("found handler: {}", o.getClass().getSimpleName()))
                 .switchIfEmpty(createNotFoundError())
                 .onErrorResume(e -> handleResultMono(exchange, Mono.error(e)))
                 .flatMap(handler -> handleMessageWith(exchange, handler));

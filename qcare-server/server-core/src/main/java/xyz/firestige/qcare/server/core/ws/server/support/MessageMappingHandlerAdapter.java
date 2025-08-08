@@ -1,5 +1,7 @@
 package xyz.firestige.qcare.server.core.ws.server.support;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -20,22 +22,22 @@ import xyz.firestige.qcare.server.core.ws.server.HandlerResult;
 import xyz.firestige.qcare.server.core.ws.server.WsExchange;
 import xyz.firestige.qcare.server.core.ws.server.method.ControllerMethodResolver;
 import xyz.firestige.qcare.server.core.ws.server.method.HandlerMethod;
+import xyz.firestige.qcare.server.core.ws.server.method.HandlerMethodArgumentResolver;
 import xyz.firestige.qcare.server.core.ws.server.method.InvocableHandlerMethod;
 import xyz.firestige.qcare.server.core.ws.server.HandlerAdapter;
+import xyz.firestige.qcare.server.core.ws.server.method.annotation.MessagePayloadMethodArgumentResolver;
 
 public class MessageMappingHandlerAdapter implements HandlerAdapter, DispatchExceptionHandler, ApplicationContextAware, InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(MessageMappingHandlerAdapter.class);
-    private ArgumentResolverConfigurer argumentResolverConfigurer;
     private ConfigurableApplicationContext ctx;
     private ControllerMethodResolver methodResolver;
 
-
-
     @Override
     public void afterPropertiesSet() throws Exception {
-        this.argumentResolverConfigurer = Optional.ofNullable(this.argumentResolverConfigurer)
-                .orElseGet(ArgumentResolverConfigurer::new);
-        this.methodResolver = new ControllerMethodResolver();
+        List<HandlerMethodArgumentResolver> resolvers = new ArrayList<>();
+        MessagePayloadExtractor extractor = ctx.getBean(MessagePayloadExtractor.class);
+        resolvers.add(new MessagePayloadMethodArgumentResolver(extractor));
+        this.methodResolver = new ControllerMethodResolver(resolvers);
     }
 
     @Override
@@ -63,10 +65,9 @@ public class MessageMappingHandlerAdapter implements HandlerAdapter, DispatchExc
         InvocableHandlerMethod invocableMethod = this.methodResolver.getInvocableHandlerMethod(method);
         DispatchExceptionHandler exceptionHandler = (s, ex) -> handleException(s.session(), ex, method);
 
-        Mono<HandlerResult> resultMono = invocableMethod.invoke(exchange)
+        return invocableMethod.invoke(exchange)
                 .doOnNext(result -> result.withExceptionHandler(exceptionHandler))
                 .onErrorResume(ex -> exceptionHandler.handleException(exchange, ex));
-        return resultMono;
     }
 
     private Mono<HandlerResult> handleException(WebSocketSession session, Throwable exception, HandlerMethod method) {

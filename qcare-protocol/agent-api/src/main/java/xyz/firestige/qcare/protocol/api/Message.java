@@ -1,4 +1,4 @@
-package xyz.firestige.qcare.server.core.ws.server;
+package xyz.firestige.qcare.protocol.api;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -18,11 +18,12 @@ public class Message<T> {
 
     public Message() {}
 
-    public Message(String id, String type, String route, T payload) {
+    public Message(String id, String type, String route, String action, T payload) {
         this.id = id;
         this.type = type;
         this.route = route;
         this.payload = payload;
+        this.action = action;
     }
 
     public String getId() {
@@ -63,5 +64,11 @@ public class Message<T> {
 
     public void setPayload(T payload) {
         this.payload = payload;
+    }
+
+    public Message<?> createResponse(Object payload) {
+        Message<?> resp = new Message<>(this.id, this.type, route, this.action, payload);
+        resp.type = "RESPONSE";
+        return resp;
     }
 }

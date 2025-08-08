@@ -32,13 +32,14 @@ public abstract class AbstractHandlerMethodMapping<T> extends ApplicationObjectS
 
     private final MappingRegistry registry = new MappingRegistry();
     private final PathPatternParser patternParser = new PathPatternParser();
-    private String beanName;
+    private String name;
     private int order;
 
     public Map<T, HandlerMethod> getHandlerMethods() {
         this.registry.lock.readLock().lock();
         try {
-            return this.registry.getRegistrations().entrySet().stream().collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, e -> e.getValue().getHandlerMethod()));
+            return this.registry.getRegistrations().entrySet().stream()
+                    .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, e -> e.getValue().getHandlerMethod()));
         } finally {
             this.registry.lock.readLock().unlock();
         }
@@ -63,7 +64,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends ApplicationObjectS
 
     @Override
     public void setBeanName(String beanName) {
-        this.beanName = beanName;
+        this.name = beanName;
     }
 
     MappingRegistry getRegistry() {
@@ -213,7 +214,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends ApplicationObjectS
         }
 
         public List<T> getMappingsByDirectPath(WsExchange exchange) {
-            String path = exchange.session().getHandshakeInfo().getUri().getPath();
+            String path = exchange.message().getRoute();
             return pathLookup.get(path);
         }
 

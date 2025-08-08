@@ -80,7 +80,7 @@ public class InvocableHandlerMethod extends HandlerMethod {
                 argMonos.add(Mono.just(providedArg));
                 continue;
             }
-            if (resolvers.supportsParameter(parameter)) {
+            if (!resolvers.supportsParameter(parameter)) {
                 return Mono.error(() -> new IllegalArgumentException("Parameter " + parameter.getParameterName() + " is not supported"));
             }
             Mono<Object> argMono = resolvers.resolveArgument(parameter, exchange).defaultIfEmpty(NO_ARG_VALUE);
