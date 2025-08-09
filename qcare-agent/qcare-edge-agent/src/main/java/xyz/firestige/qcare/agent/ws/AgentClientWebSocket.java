@@ -7,7 +7,7 @@ import io.micronaut.websocket.annotation.OnOpen;
 import reactor.core.publisher.Mono;
 
 @ClientWebSocket("/ws?agent_id={agentId}")
-public abstract class AgentClientWebSocket implements AutoCloseable{
+abstract class AgentClientWebSocket implements AutoCloseable{
     private String agentId;
     private WebSocketSession session;
 
@@ -24,4 +24,8 @@ public abstract class AgentClientWebSocket implements AutoCloseable{
 
     public abstract void send(String message);
     public abstract Mono<String> sendAsync(String message);
+
+    public boolean isConnected() {
+        return session != null && session.isOpen();
+    }
 }

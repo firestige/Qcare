@@ -5,3 +5,7 @@ micronaut:
     http:
       cookie: true
       header: true
+qcare:
+  agent:
+    name: qcare-edge-collector
+    remote-address: localhost:8080

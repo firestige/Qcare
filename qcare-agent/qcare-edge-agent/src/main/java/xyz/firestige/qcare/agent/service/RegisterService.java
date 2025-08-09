@@ -1,15 +1,20 @@
 package xyz.firestige.qcare.agent.service;
 
+import reactor.core.publisher.Mono;
+import xyz.firestige.qcare.agent.AgentInfo;
+
 public interface RegisterService {
+
+    Mono<String> requireLeaderHost(String host);
+
     /**
      * Register the agent to the server.
      *
-     * @param agentId The unique identifier for the agent.
-     * @param agentVersion The version of the agent.
-     * @param agentType The type of the agent (e.g., "edge").
-     * @return true if registration is successful, false otherwise.
+     * @param info the metadata of the agent
+     * @return wsConnection addr.
      */
-    boolean register(String agentId, String agentVersion, String agentType);
+    Mono<String> register(AgentInfo info);
+
     /**
      * Unregister the agent from the server.
      *

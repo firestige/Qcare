@@ -2,23 +2,30 @@ package xyz.firestige.qcare.server.api;
 
 import java.net.URI;
 
+import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import reactor.core.publisher.Mono;
-import xyz.firestige.qcare.server.api.vo.AgentRegisterRequest;
+import xyz.firestige.qcare.protocol.api.agent.http.AgentRegisterRequest;
 import xyz.firestige.qcare.server.core.agent.AgentService;
+import xyz.firestige.qcare.server.core.agent.model.AgentInfo;
 import xyz.firestige.qcare.server.core.cluster.ClusterManagementService;
 
 @RestController
 @RequestMapping("/api/agent")
 public class AgentController {
+    private static final Logger log = LoggerFactory.getLogger(AgentController.class);
     private final AgentService agentService;
     private final ClusterManagementService clusterManagementService;
 
@@ -38,15 +45,16 @@ public class AgentController {
     }
 
     @PostMapping("/")
-    public Mono<ServerResponse> registerAgent(@RequestBody AgentRegisterRequest request) {
+    public Mono<ResponseEntity<String>> registerAgent(AgentRegisterRequest request) {
         if (clusterManagementService.isLeader()) {
-            return agentService.registerAgent(request.info())
-                    .flatMap(response -> ServerResponse.ok().bodyValue(response))
-                    .onErrorResume(e -> ServerResponse.status(500).bodyValue("Registration failed: " + e.getMessage()));
+            log.info("Register agent request has been sent to leader");
+            AgentInfo info = new AgentInfo(request.id(), request.name());
+            return agentService.registerAgent(info)
+                    .then(Mono.defer(() -> Mono.just(ResponseEntity.ok("localhost:8080"))));
         } else {
-            String leaderHost = clusterManagementService.getLeaderHost();
-            URI uri = URI.create("http://" + leaderHost + "/api/agent/");
-            return ServerResponse.permanentRedirect(uri).build();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(URI.create("http://localhost:8080/api/agent/"));
+            return Mono.just(ResponseEntity.status(HttpStatus.FOUND).headers(headers).build());
         }
     }
 
