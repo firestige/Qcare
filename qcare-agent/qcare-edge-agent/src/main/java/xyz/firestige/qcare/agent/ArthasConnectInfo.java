@@ -1,13 +1,10 @@
 package xyz.firestige.qcare.agent;
 
-public class ArthasConnectInfo {
-    private final String url;
-
-    public ArthasConnectInfo(String url) {
-        this.url = url;
-    }
-
-    public String getUrl() {
-        return url;
-    }
+/**
+ * Arthas 连接信息
+ * <p>
+ * 该类用于存储 Arthas 的连接 URL。
+ * </p>
+ */
+public record ArthasConnectInfo(String url) {
 }
