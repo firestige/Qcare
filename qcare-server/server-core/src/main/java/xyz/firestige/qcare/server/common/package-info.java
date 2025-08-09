@@ -1,0 +1,1 @@
+package xyz.firestige.qcare.server.common;

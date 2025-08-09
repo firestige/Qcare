@@ -1,0 +1,36 @@
+{
+  "timestamp": "2025-08-03T00:21:43.965Z",
+  "interfaces": [
+    "ArthasInstanceInfo",
+    "ArthasInstanceListResponse",
+    "DependencyApiResponse",
+    "DependencyApiResponseData",
+    "DependencyDetailResponse",
+    "DependencyDetailResponseData",
+    "DependencyDetailResponseDataSecurityReport",
+    "DependencyDetailResponseDataSecurityReportVulnerabilitiesInner",
+    "DependencyDetailResponseDataUsageInfo",
+    "DependencyDetailResponseDataVersionHistoryInner",
+    "DependencyItem",
+    "DependencyStats",
+    "DependencyTreeNode",
+    "ErrorResponse",
+    "OperationResponse",
+    "ScanResponse",
+    "ScanResponseScanResult",
+    "UpdateDependencyRequest",
+    "DependenciesApiInterface",
+    "SecurityApiInterface",
+    "ToolsApiInterface"
+  ],
+  "enums": [
+    "ArthasInstanceInfoStatus",
+    "ArthasInstanceInfoArthasStatus",
+    "DependencyDetailResponseDataSecurityReportVulnerabilitiesInnerSeverity",
+    "DependencyItemStatus",
+    "DependencyItemSecurity",
+    "DependenciesGetStatus",
+    "DependenciesGetSecurity"
+  ],
+  "apis": ["Dependencies", "Security", "Tools"]
+}
