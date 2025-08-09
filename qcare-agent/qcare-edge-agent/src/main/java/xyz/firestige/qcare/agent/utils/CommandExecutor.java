@@ -1,4 +1,4 @@
-package xyz.firestige.qcare.agent.service;
+package xyz.firestige.qcare.agent.utils;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
