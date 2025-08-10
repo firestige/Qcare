@@ -10,7 +10,7 @@ interface MainProps {
 
 const Main: React.FC<MainProps> = ({ collapsed }) => {
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { colorBgContainer },
   } = theme.useToken();
 
   return (
@@ -18,10 +18,8 @@ const Main: React.FC<MainProps> = ({ collapsed }) => {
       <Content
         style={{
           margin: '88px 24px 24px 24px',
-          padding: 24,
-          minHeight: 280,
+          minHeight: 'calc(100vh - 88)',
           background: colorBgContainer,
-          borderRadius: borderRadiusLG,
         }}
       >
         <Outlet />

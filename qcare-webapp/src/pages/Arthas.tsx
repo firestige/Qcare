@@ -209,7 +209,7 @@ const Arthas: React.FC = () => {
       style={{
         padding: '24px',
         backgroundColor: '#f5f5f5',
-        minHeight: '100vh',
+        height: '100%',
       }}
     >
       <Spin spinning={loading}>
