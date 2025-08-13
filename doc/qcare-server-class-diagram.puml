@@ -1,0 +1,222 @@
+@startuml QcareServerCore
+' Qcare Server UML Class Diagram (core subset)
+'
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+
+package "server-core.api" {
+class AgentController {
+  - agentService: AgentService
+  - clusterManagementService: ClusterManagementService
+  + getAllAgentInfo(): Mono<ServerResponse>
+  + getAgentInfo(id: String): Mono<ServerResponse>
+  + registerAgent(request: AgentRegisterRequest): Mono<ResponseEntity<String>>
+  + unregisterAgent(id: String): Mono<ServerResponse>
+}
+class ClusterController {
+  + leaderHost(): String
+}
+}
+
+package "server-core.agent" {
+interface AgentService {
+  + unregisterAgent(id: String): Mono<Void>
+  + registerAgent(info: AgentInfo): Mono<Void>
+}
+class DefaultAgentService implements AgentService
+
+class AgentInfo {
+  - agentId: String
+  - agentName: String
+  - agentState: AgentState
+  - agentIpAddress: String
+  - agentMetadata: Map<String,String>
+}
+
+enum AgentState { ONLINE; OFFLINE }
+record ConnectInfo { url: String, token: String }
+
+interface AgentWebSocketManager {
+  + join(agentId: String, session: WebSocketSession): Mono<Void>
+  + validateConnectionToken(token: String, agentId: String): boolean
+  + leave(agentId: String): void
+  + isConnected(agentId: String): boolean
+  + getSession(agentId: String): WebSocketSession
+}
+abstract class AbstractAgentWebSocketManagerSupporter implements AgentWebSocketManager {
+  - cleanupInterval: Duration
+  - cleanupTask: Disposable
+  # cleanup(): void
+}
+class InMemoryAgentManager extends AbstractAgentWebSocketManagerSupporter {
+  - sessionMap: Map<String,WebSocketSession>
+  + join(...)
+  + validateConnectionToken(...)
+  + leave(...)
+  + isConnected(...)
+  + getSession(...)
+  + cleanup()
+}
+}
+
+package "server-core.cluster" {
+interface ClusterManagementService {
+  + isLeader(): boolean
+  + getLeaderHost(): String
+}
+class ClusterManagementServiceStub implements ClusterManagementService
+}
+
+package "server-core.event" {
+abstract class ApplicationEvent {
+  - id: String
+  - name: String
+  - timestamp: Instant
+  + getId(): String
+  + getName(): String
+  + getPayload(): Object
+  + getTimestamp(): Instant
+}
+abstract class AgentEvent extends ApplicationEvent {
+  - agentInfo: AgentInfo
+  + getPayload(): AgentInfo
+}
+class AgentJoinEvent extends AgentEvent
+class AgentLeaveEvent extends AgentEvent
+}
+
+package "server-core.ws" {
+class CloseStatusWrapper <<utility>>
+}
+
+package "server-core.ws.server" {
+interface WsHandler { + handle(exchange: WsExchange): Mono<Void> }
+interface WsExchange {
+  + session(): WebSocketSession
+  + message(): Message
+  + getAttribuString(key: String): String
+  + getAttribute(key: String): T
+  + getAttributeOrDefault(key: String, defaultValue: T): T
+  + setAttribute(key: String, value: Object): void
+}
+interface HandlerMapping { + getHandler(exchange: WsExchange): Mono<Object> }
+interface HandlerAdapter { + supports(handler: Object): boolean + handle(exchange: WsExchange, handler: Object): Mono<HandlerResult> }
+interface HandlerResultHandler { + supports(result: HandlerResult): boolean + handleResult(exchange: WsExchange, result: HandlerResult): Mono<Void> }
+interface DispatchExceptionHandler { + handleException(exchange: WsExchange, exception: Throwable): Mono<HandlerResult> }
+class Dispatcher implements WsHandler, ApplicationContextAware {
+  - handlerMappings: List<HandlerMapping>
+  - handlerAdapters: List<HandlerAdapter>
+  - resultHandlers: List<HandlerResultHandler>
+  + handle(exchange: WsExchange): Mono<Void>
+}
+class HandlerResult {
+  - handler: Object
+  - returnValue: Object
+  - returnType: ResolvableType
+  - requestMessage: Message
+  - exceptionHandler: DispatchExceptionHandler
+  + withExceptionHandler(h: DispatchExceptionHandler): HandlerResult
+}
+}
+
+package "server-core.ws.server.method" {
+class HandlerMethod extends AnnotatedMethod {
+  - bean: Object
+  - factory: BeanFactory
+  - beanType: Class
+  - validateArguments: boolean
+  - validateReturnType: boolean
+  + createInvocableHandlerMethod(): InvocableHandlerMethod
+}
+class InvocableHandlerMethod extends HandlerMethod {
+  - resolvers: HandlerMethodArgumentResolverComposite
+  + invoke(exchange: WsExchange, args: Object[]): Mono<HandlerResult>
+}
+interface HandlerMethodArgumentResolver { + supportsParameter(p: MethodParameter): boolean + resolveArgument(p: MethodParameter, e: WsExchange): Mono<Object> }
+class HandlerMethodArgumentResolverComposite implements HandlerMethodArgumentResolver {
+  - resolvers: List<HandlerMethodArgumentResolver>
+  - resolverMap: Map<MethodParameter,HandlerMethodArgumentResolver>
+}
+class WsMessageInfo implements WsMessageCondition {
+  - name: String
+  - patternCondition: RoutePatternCondition
+  + combine(other: WsMessageInfo): WsMessageInfo
+  + getMatchingCondition(exchange: WsExchange): WsMessageInfo
+  + compareTo(other: WsMessageInfo, exchange: WsExchange): int
+}
+interface WsMessageCondition { + combine(other: T): T + getMatchingCondition(exchange: WsExchange): T + compareTo(other: T, exchange: WsExchange): int }
+}
+
+package "server-core.ws.server.condition" {
+abstract class AbstractWsMessageCondition<T>
+class RoutePatternCondition extends AbstractWsMessageCondition<RoutePatternCondition>
+}
+
+package "server-core.ws.server.mapping" {
+abstract class AbstractHandlerMethodMapping<T> implements HandlerMapping, InitializingBean, BeanNameAware, Ordered {
+  - registry: MappingRegistry
+  - patternParser: PathPatternParser
+  + registerMapping(mapping: T, handler: Object, method: Method)
+  + unregisterMapping(mapping: T)
+  + getHandler(exchange: WsExchange): Mono<Object>
+  ..inner classes..
+}
+class WsMessageMappingInfoHandlerMapping extends AbstractHandlerMethodMapping<WsMessageInfo>
+class WsMessageMappingHandlerMapping extends WsMessageMappingInfoHandlerMapping implements EmbeddedValueResolverAware
+}
+
+package "server-core.ws.server.annotation" {
+annotation RouteMapping
+annotation WsMsgController
+annotation ResponseMessage
+annotation WebSocket
+}
+
+package "proxy-server-starter" {
+class Bootstrap
+}
+
+package "gateway-server-starter" {
+class GatewayServerStarterApplication
+}
+
+package "server-core.proto.ws" {
+record Message { id: String, action: String, msgType: MsgType, payload: String, transactionId: String }
+enum MsgType { REQUEST; RESPONSE; REGISTER; UNREGISTER; KEEPALIVE }
+}
+
+package "server-core.common.ws.message" {
+record RegisterMessage { agentId: String, ip: String, instanceId: String, serviceName: String, timestamp: Instant }
+record AckMessage { referenceId: String, status: int, reason: String }
+record PingMessage { timestamp: Instant }
+record PongMessage { timestamp: Instant }
+}
+
+' Relationships
+AgentController --> AgentService
+AgentController --> ClusterManagementService
+DefaultAgentService --> AgentService
+ClusterManagementServiceStub --> ClusterManagementService
+AgentEvent --> ApplicationEvent
+AgentJoinEvent --> AgentEvent
+AgentLeaveEvent --> AgentEvent
+AbstractAgentWebSocketManagerSupporter --> AgentWebSocketManager
+InMemoryAgentManager --> AbstractAgentWebSocketManagerSupporter
+Dispatcher --> HandlerMapping
+Dispatcher --> HandlerAdapter
+Dispatcher --> HandlerResultHandler
+HandlerResult --> DispatchExceptionHandler
+InvocableHandlerMethod --> HandlerMethodArgumentResolverComposite
+HandlerMethod --> InvocableHandlerMethod : creates
+WsMessageMappingHandlerMapping --> WsMessageMappingInfoHandlerMapping
+WsMessageMappingInfoHandlerMapping --> AbstractHandlerMethodMapping
+RoutePatternCondition --> AbstractWsMessageCondition
+WsMessageInfo --> RoutePatternCondition : uses
+WsMessageInfo --> WsMessageCondition
+RoutePatternCondition --> WsMessageCondition
+AbstractHandlerMethodMapping --> HandlerMethod
+HandlerMethodArgumentResolverComposite --> HandlerMethodArgumentResolver
+
+@enduml
