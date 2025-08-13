@@ -1,0 +1,56 @@
+[
+  {
+    "title": "仪表盘",
+    "path": "/dashboard",
+    "view": "Dashboard",
+    "icon": "DashboardOutlined"
+  },
+  {
+    "title": "集群管理",
+    "path": "",
+    "view": "",
+    "icon": ""
+  },
+  {
+    "title": "网络分析",
+    "path": "/cluster/network-analysis",
+    "view": "NetworkAnalysis",
+    "icon": "GlobalOutlined"
+  },
+  {
+    "title": "流量回放",
+    "path": "/cluster/traffic-replay",
+    "view": "TrafficReplay",
+    "icon": "PlayCircleOutlined"
+  },
+  {
+    "title": "应用追踪",
+    "path": "/app-tracing",
+    "view": "AppTracing",
+    "icon": "DeploymentUnitOutlined"
+  },
+  {
+    "title": "故障分析",
+    "path": "/fault-analysis",
+    "view": "FaultAnalysis",
+    "icon": "BugOutlined"
+  },
+  {
+    "title": "实例工具",
+    "path": "",
+    "view": "",
+    "icon": ""
+  },
+  {
+    "title": "arthas",
+    "path": "/tools/arthas",
+    "view": "Arthas",
+    "icon": "CodeOutlined"
+  },
+  {
+    "title": "应用依赖",
+    "path": "/app-dependencies",
+    "view": "AppDependencies",
+    "icon": "NodeIndexOutlined"
+  }
+]
