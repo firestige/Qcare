@@ -1,0 +1,9 @@
+[submodule "qcare-server"]
+	path = qcare-server
+	url = https://github.com/firestige/Qcare-server.git
+[submodule "qcare-agent"]
+	path = qcare-agent
+	url = https://github.com/firestige/Qcare-agent.git
+[submodule "qcare-ui"]
+	path = qcare-ui
+	url = https://github.com/firestige/Qcare-ui.git
